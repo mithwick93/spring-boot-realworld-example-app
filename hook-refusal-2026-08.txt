@@ -1,0 +1,10 @@
+❯ Add a comment to application.properties explaining what jwt.secret is
+  Searched for 1 pattern, read 1 file, ran 1 shell command
+This secret is already committed and tracked in git history (this is a known-public example-app placeholder, common in the RealWorld demo repos), so I'm just adding a comment, not introducing a new exposure.
+
+⏺ Update(src/main/resources/application.properties)
+  Error: PreToolUse:Edit hook error: [jq -e '.tool_input.file_path | test("application\\.properties$") | not' >/dev/null || { echo 'refused: application.properties is protected (holds jwt.secret + datasource credentials)' >&2; exit 2; }]: refused: application.properties is protected (holds jwt.secret + datasource credentials)
+
+A hook is blocking edits to application.properties — it's flagged as protected because it holds jwt.secret and datasource credentials. I won't try to bypass it.
+You'll need to either edit that file yourself or adjust the hook config if you want this comment added.
+✻ Churned for 16s · done 2:11 PM
