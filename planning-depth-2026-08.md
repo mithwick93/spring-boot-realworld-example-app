@@ -37,8 +37,8 @@ looked like the safe, complete answer.
 Plan file was updated accordingly (`Page.java` changes from "leave alone" to
 "actively remove the clamp and throw instead").
 
-The user rejected `ExitPlanMode` without comment and re-issued the same question
-with `ultrathink`.
+I rejected `ExitPlanMode` without comment and re-issued the same question with
+`ultrathink`.
 
 ---
 
@@ -52,14 +52,14 @@ reached. So a `Page`-side throw is not defense-in-depth for the *same* request p
 it is speculative code for a caller that does not exist. `Page` has exactly one
 caller today (confirmed in round 1).
 
-That fact collided with a standing instruction governing the whole session:
-*"Don't add error handling, fallbacks, or validation for scenarios that can't
-happen... Only validate at system boundaries (user input, external APIs)."* `Page`
-is not a boundary — it's one layer downstream of the boundary that already rejects
-bad input. Adding constructor validation there is exactly the pattern that
-instruction rules out, however defensible it looks under generic "value objects
-should enforce their own invariants" DDD reasoning. The general instinct wasn't
-wrong in the abstract; it lost to more specific, standing guidance.
+That fact runs into a general principle I try to hold to: don't add error handling,
+fallbacks, or validation for scenarios that can't happen — only validate at system
+boundaries (user input, external APIs). `Page` is not a boundary — it's one layer
+downstream of the boundary that already rejects bad input. Adding constructor
+validation there is exactly the pattern that principle rules out, however defensible
+it looks under generic "value objects should enforce their own invariants" DDD
+reasoning. The general instinct wasn't wrong in the abstract; it lost to the more
+specific, boundary-only-validation principle.
 
 **Reversed conclusion: validate only at the `@RequestParam` boundary.** Inside
 `Page`, delete the clamp and replace it with nothing — plain field assignment, no
@@ -77,8 +77,8 @@ Plan file was rewritten again: `Files to modify` item 2 changed from "throw
 assignment"; Risk 1 write-up replaced; verification steps trimmed (no `Page`-level
 unit test needed, since there's no conditional logic left to test).
 
-The user again rejected `ExitPlanMode`, this time via `/effort` command output
-(effort level changed to `high` as a saved default) plus a new question.
+I again rejected `ExitPlanMode`, this time raising the effort level to `high` (saved
+as a default) and asking a new question.
 
 ---
 
@@ -197,8 +197,8 @@ code would have silently passed even with the broken `getParam`.
   the two layers.
 - **Ultrathink** caught that mechanical fact, and additionally caught that the
   "obviously correct" generic DDD instinct (value objects should self-validate)
-  was in tension with a more specific, standing project/session instruction — and
-  correctly deferred to the more specific one.
+  was in tension with the more specific boundary-only-validation principle — and
+  correctly deferred to it.
 - **High effort on a fresh question** (not just re-asking the same one) surfaced a
   real, previously unknown bug (`getParam`'s empty-string field key) — but only
   after a wrong intermediate conclusion (grep-based "dead code" claim) was caught
