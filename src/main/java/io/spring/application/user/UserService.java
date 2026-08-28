@@ -31,6 +31,7 @@ public class UserService {
     this.passwordEncoder = passwordEncoder;
   }
 
+  /** Creates and persists a new user from registration input. */
   public User createUser(@Valid RegisterParam registerParam) {
     User user =
         new User(
