@@ -3,6 +3,7 @@ package io.spring.application.article;
 import io.spring.core.article.Article;
 import io.spring.core.article.ArticleRepository;
 import io.spring.core.user.User;
+import javax.validation.ConstraintTarget;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,8 @@ public class ArticleCommandService {
     return article;
   }
 
-  public Article updateArticle(Article article, @Valid UpdateArticleParam updateArticleParam) {
+  @DuplicatedArticleConstraint(validationAppliesTo = ConstraintTarget.PARAMETERS)
+  public Article updateArticle(Article article, UpdateArticleParam updateArticleParam) {
     article.update(
         updateArticleParam.getTitle(),
         updateArticleParam.getDescription(),

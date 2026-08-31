@@ -6,10 +6,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import javax.validation.Constraint;
+import javax.validation.ConstraintTarget;
 import javax.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = DuplicatedArticleValidator.class)
+@Constraint(
+    validatedBy = {DuplicatedArticleValidator.class, DuplicatedArticleUpdateValidator.class})
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DuplicatedArticleConstraint {
@@ -18,4 +20,6 @@ public @interface DuplicatedArticleConstraint {
   Class<?>[] groups() default {};
 
   Class<? extends Payload>[] payload() default {};
+
+  ConstraintTarget validationAppliesTo() default ConstraintTarget.IMPLICIT;
 }
