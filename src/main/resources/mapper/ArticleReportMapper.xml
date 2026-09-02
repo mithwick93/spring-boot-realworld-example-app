@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.spring.infrastructure.mybatis.mapper.ArticleReportMapper">
+    <insert id="insert">
+        insert into article_report (article_id, user_id, reason, created_at)
+        values (
+          #{articleReport.articleId},
+          #{articleReport.userId},
+          #{articleReport.reason},
+          #{articleReport.createdAt}
+        )
+    </insert>
+    <select id="find" resultMap="articleReport">
+        select
+          AR.article_id articleReportArticleId,
+          AR.user_id articleReportUserId,
+          AR.reason articleReportReason,
+          AR.created_at articleReportCreatedAt
+          from article_report AR
+          where AR.article_id = #{articleId} and AR.user_id = #{userId}
+    </select>
+    <resultMap id="articleReport" type="io.spring.core.report.ArticleReport">
+        <result column="articleReportArticleId" property="articleId"/>
+        <result column="articleReportUserId" property="userId"/>
+        <result column="articleReportReason" property="reason"/>
+        <result column="articleReportCreatedAt" property="createdAt"/>
+    </resultMap>
+</mapper>
