@@ -98,6 +98,18 @@ public class CustomizeExceptionHandler extends ResponseEntityExceptionHandler {
             });
   }
 
+  @ExceptionHandler(DuplicateReportException.class)
+  public ResponseEntity<Object> handleDuplicateReport(
+      DuplicateReportException e, WebRequest request) {
+    return ResponseEntity.status(UNPROCESSABLE_ENTITY)
+        .body(
+            new HashMap<String, Object>() {
+              {
+                put("message", e.getMessage());
+              }
+            });
+  }
+
   @ExceptionHandler({ConstraintViolationException.class})
   @ResponseStatus(UNPROCESSABLE_ENTITY)
   @ResponseBody
