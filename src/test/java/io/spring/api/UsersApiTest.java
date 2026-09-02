@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -170,6 +171,31 @@ public class UsersApiTest {
         .then()
         .statusCode(422)
         .body("errors.email[0]", equalTo("duplicated email"));
+  }
+
+  @Test
+  public void should_show_error_message_for_race_condition_duplicate() throws Exception {
+    // Simulates the race window the app-layer check can't see: findByUsername/findByEmail both
+    // pass (as if no duplicate existed yet), but the actual insert hits the DB's UNIQUE
+    // constraint because another request won the race in between.
+    String email = "john@jacob.com";
+    String username = "johnjacob";
+
+    when(userRepository.findByUsername(eq(username))).thenReturn(Optional.empty());
+    when(userRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
+    when(userService.createUser(any()))
+        .thenThrow(new DataIntegrityViolationException("UNIQUE constraint failed: users.username"));
+
+    Map<String, Object> param = prepareRegisterParameter(email, username);
+
+    given()
+        .contentType("application/json")
+        .body(param)
+        .when()
+        .post("/users")
+        .then()
+        .statusCode(422)
+        .body("message", equalTo("username or email already exists"));
   }
 
   private HashMap<String, Object> prepareRegisterParameter(

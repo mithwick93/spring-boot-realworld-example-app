@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -77,6 +78,24 @@ public class CustomizeExceptionHandler extends ResponseEntityExceptionHandler {
             .collect(Collectors.toList());
 
     return ResponseEntity.status(UNPROCESSABLE_ENTITY).body(new ErrorResource(errorResources));
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<Object> handleDataIntegrityViolation(
+      DataIntegrityViolationException e, WebRequest request) {
+    // Safety net for the race window between the application-layer duplicate-username/email
+    // check (RegisterParam's validator) and the actual insert: two concurrent signups can both
+    // pass the check before either commits, so the DB-level UNIQUE constraint
+    // (users.username/users.email, V1__create_tables.sql) is the only thing that catches the
+    // second one. Without this handler, that case surfaced as an unhandled exception instead of
+    // a clean response.
+    return ResponseEntity.status(UNPROCESSABLE_ENTITY)
+        .body(
+            new HashMap<String, Object>() {
+              {
+                put("message", "username or email already exists");
+              }
+            });
   }
 
   @ExceptionHandler({ConstraintViolationException.class})

@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -60,6 +61,18 @@ public class GraphQLCustomizeExceptionHandler implements DataFetcherExceptionHan
               .message(handlerParameters.getException().getMessage())
               .path(handlerParameters.getPath())
               .extensions(errorsToMap(errors))
+              .build();
+      return DataFetcherExceptionHandlerResult.newResult().error(graphqlError).build();
+    } else if (handlerParameters.getException() instanceof DataIntegrityViolationException) {
+      // Same race-window safety net as CustomizeExceptionHandler (REST): the app-layer
+      // duplicate-username/email check can be passed by two concurrent signups before either
+      // commits, so this catches the DB-level UNIQUE constraint violation for the one that
+      // loses the race, instead of falling through to defaultHandler's generic error.
+      GraphQLError graphqlError =
+          TypedGraphQLError.newBuilder()
+              .errorType(ErrorType.BAD_REQUEST)
+              .message("username or email already exists")
+              .path(handlerParameters.getPath())
               .build();
       return DataFetcherExceptionHandlerResult.newResult().error(graphqlError).build();
     } else {
