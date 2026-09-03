@@ -153,6 +153,39 @@ public class ArticlesApiTest extends TestWithCurrentUser {
         .statusCode(422);
   }
 
+  @Test
+  public void should_get_error_message_with_negative_offset() throws Exception {
+    given()
+        .when()
+        .get("/articles?offset=-1")
+        .prettyPeek()
+        .then()
+        .statusCode(422)
+        .body("errors.offset[0]", equalTo("must be greater than or equal to 0"));
+  }
+
+  @Test
+  public void should_get_error_message_with_zero_limit() throws Exception {
+    given()
+        .when()
+        .get("/articles?limit=0")
+        .prettyPeek()
+        .then()
+        .statusCode(422)
+        .body("errors.limit[0]", equalTo("must be greater than or equal to 1"));
+  }
+
+  @Test
+  public void should_get_error_message_with_limit_over_max() throws Exception {
+    given()
+        .when()
+        .get("/articles?limit=101")
+        .prettyPeek()
+        .then()
+        .statusCode(422)
+        .body("errors.limit[0]", equalTo("must be less than or equal to 100"));
+  }
+
   private HashMap<String, Object> prepareParam(
       final String title, final String description, final String body, final List<String> tagList) {
     return new HashMap<String, Object>() {

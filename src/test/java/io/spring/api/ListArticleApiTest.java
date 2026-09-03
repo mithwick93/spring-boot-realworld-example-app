@@ -3,6 +3,7 @@ package io.spring.api;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.spring.TestHelper.articleDataFixture;
 import static java.util.Arrays.asList;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -71,5 +72,17 @@ public class ListArticleApiTest extends TestWithCurrentUser {
         .prettyPeek()
         .then()
         .statusCode(200);
+  }
+
+  @Test
+  public void should_get_error_message_with_limit_over_max_on_feed() throws Exception {
+    given()
+        .header("Authorization", "Token " + token)
+        .when()
+        .get("/articles/feed?limit=101")
+        .prettyPeek()
+        .then()
+        .statusCode(422)
+        .body("errors.limit[0]", equalTo("must be less than or equal to 100"));
   }
 }

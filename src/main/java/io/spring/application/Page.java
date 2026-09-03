@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Page {
-  private static final int MAX_LIMIT = 100;
   private int offset = 0;
   private int limit = 20;
 
@@ -16,16 +15,10 @@ public class Page {
   }
 
   private void setOffset(int offset) {
-    if (offset > 0) {
-      this.offset = offset;
-    }
+    this.offset = offset;
   }
 
   private void setLimit(int limit) {
-    if (limit > MAX_LIMIT) {
-      this.limit = MAX_LIMIT;
-    } else if (limit > 0) {
-      this.limit = limit;
-    }
+    this.limit = limit;
   }
 }
