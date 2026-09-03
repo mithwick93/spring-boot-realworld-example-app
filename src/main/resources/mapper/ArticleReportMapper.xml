@@ -25,4 +25,13 @@
         <result column="articleReportReason" property="reason"/>
         <result column="articleReportCreatedAt" property="createdAt"/>
     </resultMap>
+    <select id="findByReporterId" resultMap="articleReport">
+        select
+          AR.article_id articleReportArticleId,
+          AR.user_id articleReportUserId,
+          AR.reason articleReportReason,
+          AR.created_at articleReportCreatedAt
+          from article_report AR
+          where AR.user_id = #{userId}
+    </select>
 </mapper>

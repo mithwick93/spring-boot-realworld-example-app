@@ -1,0 +1,11 @@
+-- Gate finding (2.7, applying WORKFLOW.md's post-Plan self-critique rule before implementing
+-- this task): design.md for the surface-article-reports-to-admins change claimed
+-- "user_id is already indexed" as half of article_report's composite primary key
+-- (article_id, user_id). That's true of the index's existence, but not of this query's
+-- access pattern -- a composite index on (article_id, user_id) only serves an equality
+-- lookup efficiently when article_id is also part of the WHERE clause (leftmost-prefix
+-- rule). findByReporterId() filters on user_id alone, so the existing index does not
+-- serve it; without this, the query would fall back to a full table scan.
+-- Given the table is currently expected to be tiny, this is low-severity, but cheap and
+-- correct to fix now rather than carry forward as a known-but-unaddressed gap.
+create index idx_article_report_user_id on article_report (user_id);

@@ -5,6 +5,7 @@ import io.spring.core.report.ArticleReport;
 import io.spring.core.report.ArticleReportRepository;
 import io.spring.infrastructure.DbTestBase;
 import io.spring.infrastructure.repository.MyBatisArticleReportRepository;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +47,22 @@ public class MyBatisArticleReportRepositoryTest extends DbTestBase {
 
     Assertions.assertTrue(articleReportRepository.find("123", "456").isPresent());
     Assertions.assertTrue(articleReportRepository.find("123", "789").isPresent());
+  }
+
+  @Test
+  public void should_find_all_reports_filed_by_a_reporter_across_articles() {
+    articleReportRepository.save(new ArticleReport("123", "456", "spam"));
+    articleReportRepository.save(new ArticleReport("999", "456", "off-topic"));
+    articleReportRepository.save(new ArticleReport("123", "789", "abuse"));
+
+    List<ArticleReport> reports = articleReportRepository.findByReporterId("456");
+
+    Assertions.assertEquals(2, reports.size());
+    Assertions.assertTrue(reports.stream().allMatch(r -> r.getUserId().equals("456")));
+  }
+
+  @Test
+  public void should_return_empty_list_for_a_reporter_with_no_reports() {
+    Assertions.assertTrue(articleReportRepository.findByReporterId("no-such-user").isEmpty());
   }
 }

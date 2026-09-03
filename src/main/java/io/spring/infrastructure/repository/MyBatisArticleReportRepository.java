@@ -5,6 +5,7 @@ import io.spring.core.report.ArticleReport;
 import io.spring.core.report.ArticleReportRepository;
 import io.spring.infrastructure.mybatis.mapper.ArticleReportMapper;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -59,5 +60,10 @@ public class MyBatisArticleReportRepository implements ArticleReportRepository {
   @Override
   public Optional<ArticleReport> find(String articleId, String userId) {
     return Optional.ofNullable(mapper.find(articleId, userId));
+  }
+
+  @Override
+  public List<ArticleReport> findByReporterId(String userId) {
+    return mapper.findByReporterId(userId);
   }
 }
