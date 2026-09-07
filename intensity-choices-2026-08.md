@@ -1,0 +1,43 @@
+# Choose Your Intensity — 2026-08
+
+Three tasks pulled from this repo's own known, already-documented gaps rather than an outside backlog. Each maps to one of the three archetypes the homework asks for.
+
+## Task 1 — Bug fix, root cause already known
+
+**The task:** the signup username/email flow has a real race window. `RegisterParam`'s validator already checks `userRepository.findByUsername`/`findByEmail` and returns a clean `{"errors": {...}}` response for the common case — that part works. But the check and the insert aren't atomic: two concurrent signups can both pass the check before either commits, and the DB's UNIQUE constraint on `users.username`/`users.email` (`V1__create_tables.sql`) is the only thing that catches the one that loses the race. Neither `CustomizeExceptionHandler` (REST) nor `GraphQLCustomizeExceptionHandler` (GraphQL) had a handler for the resulting `DataIntegrityViolationException`, so that race case surfaced as an unhandled error instead of a clean response. Flagged since homework 1.4, never fixed until now.
+
+**Intensity: no-spec.** The root cause was already fully understood before writing any code, the fix is a small, isolated addition, and it follows an existing pattern already used twice in this codebase (`InvalidAuthenticationException`'s handler in both files). Writing a spec for this would be pure overhead — there's no design decision to record, just a gap to close.
+
+**What happened running it:** no-spec held up well, including across the two files this actually touched (`CustomizeExceptionHandler.java` and `GraphQLCustomizeExceptionHandler.java`, plus a new test in `UsersApiTest.java`). It stayed no-spec-appropriate specifically because both additions were mechanical copies of an existing branch's shape, not new decisions — if either adapter's fix had required inventing a new error format, that would have been a signal to slow down. One real limitation surfaced during the "Verify" step: this repo has zero existing test coverage for GraphQL mutations (no `UserMutation` test file exists at all), so the GraphQL half of the fix has no automated test behind it — a no-spec task inherited a testing gap that predates it, and no-spec intensity doesn't obligate fixing that separately, but it's worth naming rather than leaving implicit. Verified via the REST test (`should_show_error_message_for_race_condition_duplicate`, simulating the race by mocking the duplicate-check as passing and `userService.createUser` as throwing `DataIntegrityViolationException`) and a full suite run (68/68 passing at the time). Committed `75383b5`.
+
+**Sync direction: neither — there's no spec artifact to drift.** No-spec means there's nothing to keep in sync in the first place; the question doesn't really apply. If forced to pick, the closest analogue is static: the *code itself* is the only record, and the commit message + the mirrored `InvalidAuthenticationException` pattern are what a future reader syncs against by hand. A living tool watching "the spec" here would have nothing to watch.
+
+## Task 2 — New feature, touches one or two files
+
+**The task:** `GET /articles` and `GET /articles/feed` accept `offset`/`limit` query params that `Page.java` currently clamps silently instead of validating — an out-of-range value is quietly corrected rather than rejected. This was 1.3's chosen planning task; a plan already exists (`plan-article-pagination-validation-2026-08.md`) covering which file to touch (`ArticlesApi.java`, adding `@Min`/`@Max`-style constraints at the boundary) and the one real risk it surfaced (`CustomizeExceptionHandler.getParam` mishandling the 2-segment property path a `@RequestParam`-level constraint produces — since fixed and committed in 1.8).
+
+**Intensity: spec-anchored.** This is small but has a couple of real decisions worth writing down before touching code — where exactly the constraint lives, what the error shape looks like, whether the fix is symmetric across `/articles` and `/articles/feed`. The existing plan doc is the anchor: it rides alongside the change and gets updated if implementation surfaces something the plan didn't anticipate, rather than being treated as fixed-in-stone upfront or skipped entirely.
+
+**Status:** not run in this pass — only one of the three tasks was implemented for real per the homework's Verify step, and task 1 was the better candidate for demonstrating no-spec cleanly. **Correction (2026-09-02, caught during a later consistency check):** this originally suggested it as "a strong candidate for 2.3's four-phase workflow" — that turned out not to apply, since 2.3's own instructions require running the four phases against *Homework 1's spec specifically* (i.e. 2.1's `spec-2026-08.md`, the article-report feature), not an arbitrary task chosen here. 2.3 correctly used the report spec instead. The pagination validation task remains a real, unimplemented, planned piece of work — just not part of this homework chain — with its plan doc (`plan-article-pagination-validation-2026-08.md`) still sitting ready if picked up later.
+
+**Sync direction: static.** `plan-article-pagination-validation-2026-08.md` is a plan someone (a human) updates by hand when the implementation surfaces something new — there's no tool watching `ArticlesApi.java` and the plan doc simultaneously and propagating changes automatically. That's the right choice here regardless: this is a small, single-contributor change with no living-spec tooling in play anywhere else in this repo, so introducing mechanical sync for one plan doc would be inconsistent with how everything else here is tracked (spec-2026-08.md included).
+
+## Task 3 — Cross-team surface area / compliance implications
+
+**The task:** a change to `jwt.secret` or `jwt.sessionTime` in `application.properties` — for example, rotating the signing secret or changing session duration. This file already carries a `PreToolUse` hook (from 1.5/1.8) that blocks edits to it outright, specifically because it holds `jwt.secret` plus datasource credentials. That's not incidental: a real change here has genuine secrets-handling and compliance weight (this is exactly the kind of file that needs security review in a real org, not just a code review), and the blast radius is every authenticated request on both REST and GraphQL, not one endpoint.
+
+**Intensity: spec-first.** This is the one case where writing the spec before touching anything is worth the overhead: the risk of an unstated assumption (rotation strategy, whether existing tokens get invalidated, whether this needs coordinating with anyone else who reads that config) is high enough that discovering it mid-implementation would be expensive. This is also the one task where "no reasonable reader would assume this is safe to just try" — the existing hook already encodes that judgment.
+
+**Status:** not run in this pass, for the same reason as task 2 — deliberately not implemented, since this task's whole point in this exercise is illustrating why spec-first is the right call for something this sensitive, not demonstrating it end-to-end. If this becomes a real task later, the spec should be written and reviewed before the hook is ever bypassed.
+
+**Sync direction: static, deliberately — and the case for never making it living.** Even in a hypothetical world with living-spec tooling available, this is exactly the kind of change where I would *not* want a tool automatically propagating changes between the spec and a secrets-adjacent config file — the whole reason this file has a human-blocking `PreToolUse` hook is that no automated agent should be able to touch it without a person in the loop. Static sync (a human reads the spec, a human decides the config change, no automation bridges the two) isn't a limitation to accept here, it's the actual safety property this task needs.
+
+## Summary
+
+| Task | Archetype | Intensity | Sync direction | Run for real? |
+|---|---|---|---|---|
+| Signup race — DB exception handling | Bug fix, known root cause | No-spec | N/A (no spec artifact to sync) | Yes — implemented, tested, committed (`75383b5`) |
+| Pagination offset/limit validation | New feature, 1–2 files | Spec-anchored | Static | No — real backlog item, not part of this chain (see correction above) |
+| JWT secret/session config change | Cross-team / compliance | Spec-first | Static (deliberately, not by default) | No — deliberately not attempted here |
+
+The pattern across all three: intensity tracked risk and ambiguity, not task size. Task 1 and task 3 are both small in terms of lines changed, but sit at opposite ends of the intensity spectrum because task 1's fix was fully understood and low-risk, while task 3's is under-specified and high-stakes by nature of what it touches.

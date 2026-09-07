@@ -1,4 +1,7 @@
 {
+  "enabledMcpjsonServers": [
+    "idea"
+  ],
   "hooks": {
     "SessionStart": [
       {
@@ -33,8 +36,5 @@
       }
     ]
   },
-  "outputStyle": "default",
-  "enabledMcpjsonServers": [
-    "idea"
-  ]
+  "outputStyle": "default"
 }
