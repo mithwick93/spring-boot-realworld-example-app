@@ -37,6 +37,20 @@ When adding a feature, the typical flow is: define/extend a `core` entity + repo
 - Passwords are hashed via Spring Security's `PasswordEncoder` (`BCryptPasswordEncoder` bean in `WebSecurityConfig`) — no custom encryption service.
 - Route access rules (public vs. authenticated) are defined in `api/security/WebSecurityConfig.java`.
 
+## Test Plan
+
+Every new test — human- or Claude-written — should satisfy this before it's considered done.
+
+- **Scope & risk:** full unit coverage for new pure functions/validators (`io.spring.Util`, `io.spring.core.*`, `io.spring.application.*`). MyBatis mapper XML and Flyway migrations aren't unit-tested directly — they're exercised through repository/API integration tests instead. Depth scales with risk: highest-risk areas are auth (`JwtTokenFilter`, `DefaultJwtService`), the duplicate-constraint validators (`Duplicated*Validator` — this repo has a documented history of TOCTOU races here, see Conventions below), and exception-handler field-name mapping (`CustomizeExceptionHandler.getParam`, `GraphQLCustomizeExceptionHandler.getParam`).
+- **Types & levels, with exact runner commands:**
+  - Unit (pure functions/validators, no Spring context): `./gradlew test --tests "io.spring.<package>.<ClassName>Test"`
+  - Integration (API controllers/repositories, full Spring context, in-memory SQLite): `./gradlew test --tests "io.spring.api.<Name>ApiTest"`
+  - Full suite (run before any commit touching shared code): `./gradlew test`
+- **Case coverage** — every test class should include, where applicable: positive (typical valid input), negative (invalid/missing/malformed input), boundary (null, empty string, single-character, exact-limit values, one past a limit).
+- **Rules & exit:**
+  - A test is written and confirmed *failing* before its implementation exists — a test that passes pre-implementation proves nothing.
+  - A change is done when its own test class is green **and** the full suite (`./gradlew test`) is green with no regressions elsewhere.
+  - Test method names follow the existing convention: `should_<outcome>_<condition>` (see Conventions below).
 
 ## Conventions (undocumented, found by reading source — `/init` missed these)
 
