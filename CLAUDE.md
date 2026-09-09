@@ -52,6 +52,30 @@ Every new test — human- or Claude-written — should satisfy this before it's 
   - A change is done when its own test class is green **and** the full suite (`./gradlew test`) is green with no regressions elsewhere.
   - Test method names follow the existing convention: `should_<outcome>_<condition>` (see Conventions below).
 
+## Security Requirements
+
+### Input Validation
+- Treat ALL external input as untrusted (request bodies, query params, file contents)
+- Validate format and required fields via Bean Validation (`@NotBlank`, `@Email`, etc.); add `@Size` bounds on any new user-supplied string field
+- Reject invalid input; do not attempt to sanitize and continue
+
+### Database Access
+- Use MyBatis parameter binding (`#{param}`) only — never `${param}` string substitution or manual concatenation
+- Apply least privilege on any new datasource connection
+
+### Authentication and Secrets
+- NEVER add credentials, API keys, or the JWT signing secret directly in source or `application.properties`; use environment variables
+- Use the existing `PasswordEncoder` (BCrypt) for any new password handling — do not hand-roll hashing
+- Flag any new unauthenticated endpoint for rate-limiting review before merge
+
+### Output Encoding and Error Handling
+- Never expose stack traces, internal class names, or file paths in API error responses
+- Log errors with context for debugging; keep messages returned to clients generic where the specific detail would help an attacker (e.g. account enumeration)
+
+### Dependencies
+- Verify any newly suggested package actually exists before adding it
+- Pin exact versions in `build.gradle` — no dynamic/`latest` versions
+
 ## Conventions (undocumented, found by reading source — `/init` missed these)
 
 - **Test method naming:** `should_<outcome>_<condition>` — all lowercase, underscore-separated (e.g. `should_create_user_success`, `should_show_error_message_for_blank_username`). Every test in `src/test/java/io/spring/api` follows this; some auth-flow tests also extend a shared `TestWithCurrentUser` base class rather than duplicating setup.
