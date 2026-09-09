@@ -1,10 +1,9 @@
 package io.spring.application;
 
 class LimitClamp {
-  // Known asymmetric validation: over-limit values are clamped to maxLimit, but
-  // non-positive values are silently ignored and fall back to currentValue instead
-  // of being rejected or clamped to a floor. Preserved deliberately, not fixed here.
+  // Symmetric clamping: over-limit values are clamped to maxLimit, and non-positive
+  // values are floor-clamped to 1, instead of being silently replaced by currentValue.
   static int resolve(int candidate, int currentValue, int maxLimit) {
-    return candidate > maxLimit ? maxLimit : candidate > 0 ? candidate : currentValue;
+    return candidate > maxLimit ? maxLimit : candidate > 0 ? candidate : 1;
   }
 }

@@ -39,21 +39,19 @@ public class CursorPageParameterTest {
     assertThat(page.getLimit(), is(1000));
   }
 
-  // Known asymmetric validation bug, preserved deliberately (not fixed here): an over-limit
-  // value is clamped to MAX_LIMIT, but a non-positive value is silently ignored and falls back
-  // to the field's existing default (20) instead of being rejected or clamped to a floor.
+  // Non-positive values are floor-clamped to 1, symmetric with the existing clamp-to-MAX_LIMIT
+  // behavior for over-limit values, instead of being silently replaced by the default.
   @Test
-  public void should_fall_back_to_default_limit_when_limit_is_zero() {
+  public void should_floor_clamp_limit_of_zero_to_one() {
     CursorPageParameter<String> page = new CursorPageParameter<>(null, 0, Direction.NEXT);
-    assertThat(page.getLimit(), is(20));
+    assertThat(page.getLimit(), is(1));
   }
 
-  // Known asymmetric validation bug, preserved deliberately (not fixed here): an over-limit
-  // value is clamped to MAX_LIMIT, but a non-positive value is silently ignored and falls back
-  // to the field's existing default (20) instead of being rejected or clamped to a floor.
+  // Non-positive values are floor-clamped to 1, symmetric with the existing clamp-to-MAX_LIMIT
+  // behavior for over-limit values, instead of being silently replaced by the default.
   @Test
-  public void should_fall_back_to_default_limit_when_limit_is_negative() {
+  public void should_floor_clamp_negative_limit_to_one() {
     CursorPageParameter<String> page = new CursorPageParameter<>(null, -1, Direction.NEXT);
-    assertThat(page.getLimit(), is(20));
+    assertThat(page.getLimit(), is(1));
   }
 }
