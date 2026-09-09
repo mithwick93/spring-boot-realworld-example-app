@@ -31,10 +31,6 @@ public class CursorPageParameter<T> {
   }
 
   private void setLimit(int limit) {
-    if (limit > MAX_LIMIT) {
-      this.limit = MAX_LIMIT;
-    } else if (limit > 0) {
-      this.limit = limit;
-    }
+    this.limit = LimitClamp.resolve(limit, this.limit, MAX_LIMIT);
   }
 }
