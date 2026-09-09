@@ -31,10 +31,10 @@ public class CursorPageParameter<T> {
   }
 
   private void setLimit(int limit) {
-    this.limit = resolveLimit(limit, this.limit);
+    this.limit = resolveLimit(limit, this.limit, MAX_LIMIT);
   }
 
-  private int resolveLimit(int candidate, int currentValue) {
-    return candidate > MAX_LIMIT ? MAX_LIMIT : candidate > 0 ? candidate : currentValue;
+  private int resolveLimit(int candidate, int currentValue, int maxLimit) {
+    return candidate > maxLimit ? maxLimit : candidate > 0 ? candidate : currentValue;
   }
 }
