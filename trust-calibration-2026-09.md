@@ -1,0 +1,9 @@
+| Code area | Risk | Why | Verification commitment |
+|---|---|---|---|
+| `WebSecurityConfig.java` / `JwtTokenFilter` / `DefaultJwtService.java` | HIGH | Authentication/authorization | Manual security review every change; security tests for auth-bypass; no merge without a second reviewer |
+| `UsersApi.java` (register/login) | HIGH | Auth + handles PII (email); subject of the existing 11-finding security audit (hardcoded secret, user enumeration) | Manual security review on any change; re-review against the existing audit findings |
+| `application.properties` (`jwt.secret`, datasource credentials) | HIGH | Secrets/credentials | Protected by the existing `PreToolUse` refusal hook and `detect-secrets` pre-commit hook; human sign-off on any intentional change |
+| MyBatis mapper XML (`UserMapper.xml`, `ArticleMapper.xml`, etc.) | MEDIUM | User input reaching the database; confirmed `#{}` binding throughout, no `${}` concatenation | Full test suite on every change; manual grep for `${}` on every new mapper method |
+| `CursorPageParameter` / `LimitClamp` (pagination) | MEDIUM | A small utility, but called from every paginated read on the two highest-traffic endpoints (`GET /articles`, `GET /articles/feed`) | `CursorPageParameterTest` boundary cases plus full suite on any change; no dedicated `LimitClampTest` today, named as a gap |
+| `ArticleReportApi` / `DuplicateReportException` (report feature) | MEDIUM | New business logic plus a uniqueness/data-integrity constraint | Automated tests (7 acceptance criteria already covered) plus manual review of any change touching the duplicate-check path |
+| `CustomizeExceptionHandler` / `GraphQLCustomizeExceptionHandler` | MEDIUM | Nominally error-handling, but the existing security audit found a real internal-class-name leak here — output reaching an untrusted client | Linter and full suite normally; manual review specifically for what gets echoed back to the client on any new handler branch |
