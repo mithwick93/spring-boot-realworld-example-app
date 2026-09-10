@@ -1,0 +1,20 @@
+mitwic@dev-mitwic:~/projects/Endgame/spring-boot-realworld-example-app [main]$ chmod +x .claude/hooks/guard-git.sh
+.claude/hooks/guard-git.sh <<< '{"tool_input":{"command":"git push origin main --force"}}'; echo "exit=$?"
+.claude/hooks/guard-git.sh <<< '{"tool_input":{"command":"git status"}}'; echo "exit=$?"
+Blocked: force push rewrites shared history — open a PR instead.
+exit=2
+exit=0
+mitwic@dev-mitwic:~/projects/Endgame/spring-boot-realworld-example-app [main]$ .claude/hooks/guard-git.sh <<< '{"tool_input":{"command":"git push -f origin main"}}'; echo "exit=$?"
+.claude/hooks/guard-git.sh <<< '{"tool_input":{"command":"git push origin main --force-with-lease"}}'; echo "exit=$?"
+.claude/hooks/guard-git.sh <<< '{"tool_input":{"command":"git reset --hard HEAD~3"}}'; echo "exit=$?"
+.claude/hooks/guard-git.sh <<< '{"tool_input":{"command":"git clean -fdx"}}'; echo "exit=$?"
+.claude/hooks/guard-git.sh <<< '{"tool_input":{"command":"git log --oneline -5"}}'; echo "exit=$?"
+Blocked: force push rewrites shared history — open a PR instead.
+exit=2
+Blocked: force push rewrites shared history — open a PR instead.
+exit=2
+Blocked: destructive git operation (hard reset / clean -f / mirror push).
+exit=2
+Blocked: destructive git operation (hard reset / clean -f / mirror push).
+exit=2
+exit=0
