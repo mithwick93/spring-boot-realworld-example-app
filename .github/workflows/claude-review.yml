@@ -24,6 +24,9 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # Or bill through the Anthropic API instead:
           # anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # TEMP debug: run #4 had permission_denials_count: 4 with no comment posted.
+          # Reveals the actual per-turn transcript so we can see which command was denied.
+          show_full_output: true
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
