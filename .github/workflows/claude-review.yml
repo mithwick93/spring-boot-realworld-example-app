@@ -24,6 +24,8 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # Or bill through the Anthropic API instead:
           # anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # TEMP debug: confirming bare-Bash allowedTools actually grants the tool.
+          show_full_output: true
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
@@ -53,5 +55,4 @@ jobs:
             post a one-line PR comment saying so explicitly - do not stay silent.
           claude_args: |
             --max-turns 15
-            --tools "Read,Grep,Glob,Bash"
             --allowedTools "Bash"
