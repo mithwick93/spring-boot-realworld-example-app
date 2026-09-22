@@ -56,4 +56,4 @@ jobs:
             post a one-line PR comment saying so explicitly - do not stay silent.
           claude_args: |
             --max-turns 15
-            --allowedTools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
+            --allowedTools "Bash(gh pr comment:*),Bash(gh pr diff::*),Bash(gh pr view:*)"
