@@ -59,4 +59,12 @@ public class UtilTest {
     assertThat(
         Util.truncateExcerpt("Supercalifragilisticexpialidocious", 10), is("Supercalif..."));
   }
+
+  @Test
+  public void should_return_ellipsis_only_for_all_whitespace_body_over_max_length() {
+    // Known gap flagged by 3.1's fresh-session overfitting review: an all-whitespace body
+    // longer than maxLength hits the whitespace-cut branch immediately, trims to "", and
+    // still appends "...". Documenting the actual (surprising) behavior, not a fix.
+    assertThat(Util.truncateExcerpt("           ", 5), is("..."));
+  }
 }
