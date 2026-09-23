@@ -74,7 +74,7 @@ jobs:
             `gh pr comment ${{ github.event.pull_request.number }} --body "..."`. If the
             diff has no violation of any of the five categories, post a one-line PR
             comment saying so explicitly - do not stay silent.
-          claude_args: '--allowedTools "Bash(git diff:*),Bash(git show:*),Bash(gh pr comment:*)"'
+          claude_args: '--permission-mode dontAsk --allowedTools "Bash(git diff:*),Bash(git show:*),Bash(gh pr comment:*)"'
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
 
