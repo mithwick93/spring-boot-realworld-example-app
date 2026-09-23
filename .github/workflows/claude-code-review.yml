@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
-      issues: read
+      pull-requests: write
+      issues: write
       id-token: write
 
     steps:
@@ -36,9 +36,31 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
-          plugins: 'code-review@claude-code-plugins'
-          prompt: '/code-review:code-review --comment ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
+          # TEMP debug: confirming the project-specific prompt + MCP inline-comment tool
+          # actually flags a real violation (planted-issue PR #10).
+          show_full_output: true
+          prompt: |
+            Review this pull request's diff against ONLY this repository's own
+            Security Requirements (CLAUDE.md, "## Security Requirements" section):
+            1. Input Validation - is all new external input (request bodies, query
+               params, file contents) validated via Bean Validation, with @Size bounds
+               on new user-supplied string fields, rather than sanitized-and-continued?
+            2. Database Access - does any new/changed MyBatis mapper use #{param}
+               binding only, never ${param} string substitution or manual concatenation?
+            3. Authentication and Secrets - are any credentials, API keys, or the JWT
+               signing secret kept out of source/application.properties (env vars only)?
+               Is any new password handling using the existing PasswordEncoder (BCrypt)?
+               Is any new unauthenticated endpoint flagged for a rate-limiting review?
+            4. Output Encoding and Error Handling - do new/changed error paths avoid
+               exposing stack traces, internal class names, or file paths to the client?
+            5. Dependencies - does any new build.gradle dependency exist for real and use
+               a pinned exact version, not a dynamic/"latest" one?
+
+            Do not comment on anything outside these five categories (style, naming,
+            unrelated bugs) - this review's only job is Security Requirements compliance.
+
+            For each violation, cite the file and line and name which of the five
+            categories above it violates, using an inline comment on that line.
           claude_args: '--allowedTools "mcp__github_inline_comment__create_inline_comment"'
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
