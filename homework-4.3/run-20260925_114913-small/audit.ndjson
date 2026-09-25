@@ -1,0 +1,40 @@
+{
+  "ts": "2026-09-25T11:49:13+02:00",
+  "item": "TASK-19",
+  "attempt": 1,
+  "tokens": 2092,
+  "cost_usd": 0.16518159999999998,
+  "status": "success"
+}
+{
+  "ts": "2026-09-25T11:49:13+02:00",
+  "item": "TASK-15",
+  "attempt": 1,
+  "tokens": 2449,
+  "cost_usd": 0.190705,
+  "status": "success"
+}
+{
+  "ts": "2026-09-25T11:49:13+02:00",
+  "item": "TASK-01",
+  "attempt": 1,
+  "tokens": 2480,
+  "cost_usd": 0.1964014,
+  "status": "success"
+}
+{
+  "ts": "2026-09-25T11:49:13+02:00",
+  "item": "TASK-03",
+  "attempt": 1,
+  "tokens": 3054,
+  "cost_usd": 0.21524599999999997,
+  "status": "success"
+}
+{
+  "ts": "2026-09-25T11:49:13+02:00",
+  "item": "TASK-17",
+  "attempt": 1,
+  "tokens": 3272,
+  "cost_usd": 0.2326314,
+  "status": "success"
+}

@@ -1,0 +1,122 @@
+=== Small run (5 items) — 2026-09-25 11:49 ===
+$ ./orchestration-recipe-input-validation-audit-2026-09.sh small
+
+Session: homework-4.3/run-20260925_114913-small (to resume: ./orchestration-recipe-input-validation-audit-2026-09.sh small homework-4.3/run-20260925_114913-small)
+Run size: small (5 items, up to 5 in parallel)
+SUCCESS: TASK-19 (attempt 1)
+SUCCESS: TASK-15 (attempt 1)
+SUCCESS: TASK-01 (attempt 1)
+SUCCESS: TASK-03 (attempt 1)
+SUCCESS: TASK-17 (attempt 1)
+=== Results ===
+TASK-01: SUCCESS
+TASK-03: SUCCESS
+TASK-15: SUCCESS
+TASK-17: SUCCESS
+TASK-19: SUCCESS
+Run complete: 5 succeeded, 0 failed.
+Audit log: homework-4.3/run-20260925_114913-small/audit.ndjson
+Worker reports: homework-4.3/run-20260925_114913-small/workers
+
+Total cost (summed from audit.ndjson): $1.0002 across 5 attempts, 0 retries.
+
+=== Full run (20 items), first attempt — 2026-09-25 12:58 — DISCARDED, audit-log format bug ===
+Same item set and outcome as the corrected run below (18 succeeded, 2 failed: TASK-12,
+TASK-16), but the script's audit-log writer used `jq -n` instead of `jq -nc`, so each entry
+was pretty-printed across many lines instead of one line per call. Script corrected
+(`jq -n` -> `jq -nc` in both places that append to $AUDIT_LOG) and the full run repeated. The
+discarded run's raw terminal output and malformed audit.ndjson are still on disk at
+homework-4.3/run-20260925_125825-full/ for reference; not reproduced here since the corrected
+run below supersedes it.
+
+=== Full run (20 items), corrected script — 2026-09-25 13:31 ===
+$ ./orchestration-recipe-input-validation-audit-2026-09.sh full
+
+Session: homework-4.3/run-20260925_133102-full (to resume: ./orchestration-recipe-input-validation-audit-2026-09.sh full homework-4.3/run-20260925_133102-full)
+Run size: full (20 items, up to 5 in parallel)
+SUCCESS: TASK-05 (attempt 1)
+SUCCESS: TASK-01 (attempt 1)
+SUCCESS: TASK-04 (attempt 1)
+SUCCESS: TASK-02 (attempt 1)
+Attempt 1 for TASK-03 failed (exit 1). Waiting 5s...
+SUCCESS: TASK-07 (attempt 1)
+SUCCESS: TASK-09 (attempt 1)
+SUCCESS: TASK-06 (attempt 1)
+SUCCESS: TASK-08 (attempt 1)
+SUCCESS: TASK-10 (attempt 1)
+SUCCESS: TASK-03 (attempt 2)
+SUCCESS: TASK-11 (attempt 1)
+Attempt 1 for TASK-12 failed (exit 1). Waiting 5s...
+SUCCESS: TASK-13 (attempt 1)
+SUCCESS: TASK-15 (attempt 1)
+SUCCESS: TASK-14 (attempt 1)
+Attempt 1 for TASK-16 failed (exit 1). Waiting 5s...
+Attempt 2 for TASK-12 failed (exit 1). Waiting 10s...
+SUCCESS: TASK-19 (attempt 1)
+SUCCESS: TASK-18 (attempt 1)
+SUCCESS: TASK-17 (attempt 1)
+Attempt 2 for TASK-16 failed (exit 1). Waiting 10s...
+SUCCESS: TASK-20 (attempt 1)
+Attempt 3 for TASK-12 failed (exit 1). Waiting 20s...
+FAILED: TASK-12 after 3 attempts. See homework-4.3/run-20260925_133102-full/workers/TASK-12.out
+Attempt 3 for TASK-16 failed (exit 1). Waiting 20s...
+FAILED: TASK-16 after 3 attempts. See homework-4.3/run-20260925_133102-full/workers/TASK-16.out
+=== Results ===
+TASK-01: SUCCESS
+TASK-02: SUCCESS
+TASK-03: SUCCESS
+TASK-04: SUCCESS
+TASK-05: SUCCESS
+TASK-06: SUCCESS
+TASK-07: SUCCESS
+TASK-08: SUCCESS
+TASK-09: SUCCESS
+TASK-10: SUCCESS
+TASK-11: SUCCESS
+TASK-12: FAILED
+TASK-13: SUCCESS
+TASK-14: SUCCESS
+TASK-15: SUCCESS
+TASK-16: FAILED
+TASK-17: SUCCESS
+TASK-18: SUCCESS
+TASK-19: SUCCESS
+TASK-20: SUCCESS
+Run complete: 18 succeeded, 2 failed.
+Audit log: homework-4.3/run-20260925_133102-full/audit.ndjson
+Worker reports: homework-4.3/run-20260925_133102-full/workers
+
+Total cost (summed from audit.ndjson): $4.5872 across 25 attempts (20 items, 5 retried at
+least once, 2 of those 5 -- TASK-12 and TASK-16 -- exhausted all 3 attempts and ended FAILED).
+
+=== Audit record of the larger run (homework-4.3/run-20260925_133102-full/audit.ndjson) ===
+{"ts":"2026-09-25T13:31:02+02:00","item":"TASK-05","attempt":1,"tokens":2034,"cost_usd":0.15112840000000002,"status":"success"}
+{"ts":"2026-09-25T13:31:02+02:00","item":"TASK-01","attempt":1,"tokens":2199,"cost_usd":0.1514854,"status":"success"}
+{"ts":"2026-09-25T13:31:02+02:00","item":"TASK-04","attempt":1,"tokens":2321,"cost_usd":0.17442380000000002,"status":"success"}
+{"ts":"2026-09-25T13:31:02+02:00","item":"TASK-02","attempt":1,"tokens":2961,"cost_usd":0.19457220000000003,"status":"success"}
+{"ts":"2026-09-25T13:31:02+02:00","item":"TASK-03","attempt":1,"status":"failed","result":{"duration_api_ms":41574,"stop_reason":"tool_use","session_id":"c3dded98-153a-4c21-961e-5b704784bb84","total_cost_usd":0.2011936,"usage":{"input_tokens":16,"cache_creation_input_tokens":25060,"cache_read_input_tokens":351358,"output_tokens":3065,"output_tokens_details":{"thinking_tokens":446},"terminal_reason":"max_turns","is_error":true,"num_turns":9,"subtype":"error_max_turns","errors":["Reached maximum number of turns (8)"],"permission_denials":[{"tool_name":"Bash","tool_use_id":"toolu_01PF2fKgpZ4NriM2ox7v6LVf","tool_input":{"command":"find /Users/mitwic/projects/Endgame/spring-boot-realworld-example-app -name \"NewArticleParam.java\" -exec cat {} \\;","description":"Show NewArticleParam DTO contents"}}],"type":"result"}}
+{"ts":"2026-09-25T13:31:39+02:00","item":"TASK-07","attempt":1,"tokens":1620,"cost_usd":0.1556374,"status":"success"}
+{"ts":"2026-09-25T13:31:51+02:00","item":"TASK-09","attempt":1,"tokens":1043,"cost_usd":0.1316284,"status":"success"}
+{"ts":"2026-09-25T13:31:37+02:00","item":"TASK-06","attempt":1,"tokens":2675,"cost_usd":0.1814452,"status":"success"}
+{"ts":"2026-09-25T13:31:45+02:00","item":"TASK-08","attempt":1,"tokens":2672,"cost_usd":0.197853,"status":"success"}
+{"ts":"2026-09-25T13:32:08+02:00","item":"TASK-10","attempt":1,"tokens":1380,"cost_usd":0.139833,"status":"success"}
+{"ts":"2026-09-25T13:32:00+02:00","item":"TASK-03","attempt":2,"tokens":3442,"cost_usd":0.20149000000000003,"status":"success"}
+{"ts":"2026-09-25T13:32:14+02:00","item":"TASK-11","attempt":1,"tokens":2354,"cost_usd":0.1618014,"status":"success"}
+{"ts":"2026-09-25T13:32:20+02:00","item":"TASK-12","attempt":1,"status":"failed","result":{"duration_api_ms":38321,"stop_reason":"tool_use","session_id":"a55a3182-95c5-4cdf-ac13-81ba2dddd124","total_cost_usd":0.20750619999999997,"usage":{"input_tokens":16,"cache_creation_input_tokens":26975,"cache_read_input_tokens":350771,"output_tokens":2942},"terminal_reason":"max_turns","is_error":true,"num_turns":9,"subtype":"error_max_turns","errors":["Reached maximum number of turns (8)"],"permission_denials":[],"type":"result"}}
+{"ts":"2026-09-25T13:32:30+02:00","item":"TASK-13","attempt":1,"tokens":3823,"cost_usd":0.21774580000000004,"status":"success"}
+{"ts":"2026-09-25T13:32:49+02:00","item":"TASK-15","attempt":1,"tokens":2712,"cost_usd":0.1772542,"status":"success"}
+{"ts":"2026-09-25T13:32:36+02:00","item":"TASK-14","attempt":1,"tokens":4508,"cost_usd":0.20288420000000001,"status":"success"}
+{"ts":"2026-09-25T13:32:50+02:00","item":"TASK-16","attempt":1,"status":"failed","result":{"duration_api_ms":49557,"stop_reason":"tool_use","session_id":"4b05086a-1bbc-4de5-b051-3a9192005884","total_cost_usd":0.21902299999999997,"usage":{"input_tokens":16,"cache_creation_input_tokens":27063,"cache_read_input_tokens":353595,"output_tokens":4002},"terminal_reason":"max_turns","is_error":true,"num_turns":9,"subtype":"error_max_turns","errors":["Reached maximum number of turns (8)"],"permission_denials":[],"type":"result"}}
+{"ts":"2026-09-25T13:33:11+02:00","item":"TASK-12","attempt":2,"status":"failed","result":{"duration_api_ms":29902,"stop_reason":"tool_use","session_id":"3e26898c-4a31-4522-9389-4ba6ba7135ba","total_cost_usd":0.19283839999999997,"usage":{"input_tokens":16,"cache_creation_input_tokens":25584,"cache_read_input_tokens":349002,"output_tokens":2067},"terminal_reason":"max_turns","is_error":true,"num_turns":9,"subtype":"error_max_turns","errors":["Reached maximum number of turns (8)"],"permission_denials":[],"type":"result"}}
+{"ts":"2026-09-25T13:33:35+02:00","item":"TASK-19","attempt":1,"tokens":2019,"cost_usd":0.1445668,"status":"success"}
+{"ts":"2026-09-25T13:33:32+02:00","item":"TASK-18","attempt":1,"tokens":3322,"cost_usd":0.2146444,"status":"success"}
+{"ts":"2026-09-25T13:33:29+02:00","item":"TASK-17","attempt":1,"tokens":3169,"cost_usd":0.21936060000000004,"status":"success"}
+{"ts":"2026-09-25T13:33:52+02:00","item":"TASK-16","attempt":2,"status":"failed","result":{"duration_api_ms":50131,"stop_reason":"tool_use","session_id":"4c716e4d-5321-471d-99eb-c9b7f2f60b3a","total_cost_usd":0.1524016,"usage":{"input_tokens":16,"cache_creation_input_tokens":8741,"cache_read_input_tokens":376228,"output_tokens":4216},"terminal_reason":"max_turns","is_error":true,"num_turns":9,"subtype":"error_max_turns","errors":["Reached maximum number of turns (8)"],"permission_denials":[],"type":"result"}}
+{"ts":"2026-09-25T13:34:11+02:00","item":"TASK-20","attempt":1,"tokens":3675,"cost_usd":0.21903879999999998,"status":"success"}
+{"ts":"2026-09-25T13:34:03+02:00","item":"TASK-12","attempt":3,"status":"failed","result":{"duration_api_ms":57364,"stop_reason":"tool_use","session_id":"932ff402-288f-47d5-bb7f-39637d181590","total_cost_usd":0.16834,"usage":{"input_tokens":16,"cache_creation_input_tokens":11323,"cache_read_input_tokens":370830,"output_tokens":4885},"terminal_reason":"max_turns","is_error":true,"num_turns":9,"subtype":"error_max_turns","errors":["Reached maximum number of turns (8)"],"permission_denials":[],"type":"result"}}
+{"ts":"2026-09-25T13:35:03+02:00","item":"TASK-16","attempt":3,"status":"failed","result":{"duration_api_ms":44681,"stop_reason":"tool_use","session_id":"d28f0947-6f0e-4fe3-a096-815f82569062","total_cost_usd":0.20905579999999999,"usage":{"input_tokens":16,"cache_creation_input_tokens":26506,"cache_read_input_tokens":352449,"output_tokens":3251},"terminal_reason":"max_turns","is_error":true,"num_turns":9,"subtype":"error_max_turns","errors":["Reached maximum number of turns (8)"],"permission_denials":[],"type":"result"}}
+
+Note: the "result" objects above are trimmed to the fields relevant to diagnosing status
+(terminal_reason, errors, permission_denials, cost, tokens) for readability. The untrimmed
+objects, as actually printed by each `claude -p --output-format json` call, are preserved
+verbatim in homework-4.3/run-20260925_133102-full/workers/*-output.json and *.out.
