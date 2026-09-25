@@ -144,7 +144,7 @@ Read the file(s) in SCOPE. Answer the QUESTION with specific file:line reference
 [specific findings, with file:line references, citing CLAUDE.md's Security Requirements > Input Validation section where relevant]
 ## Recommendations
 [concrete, actionable -- or state explicitly that no gap was found]
-" --max-turns "$MAX_TURNS" --max-budget-usd "$MAX_USD" --permission-mode acceptEdits --allowedTools "Read,Write" --output-format json \
+" --max-turns "$MAX_TURNS" --max-budget-usd "$MAX_USD" --permission-mode acceptEdits --allowedTools "Read,Write" --tools "Read,Write" --output-format json \
       > "$RESULT_FILE" 2>>"$OUT_FILE"
     local call_status=$?
     set -e
