@@ -34,9 +34,13 @@ AUDIT_LOG="$SESSION_DIR/audit.ndjson"
 
 MAX_RETRIES=3
 TIMEOUT_SECONDS=300
-MAX_TURNS=8
+MAX_TURNS=${MAX_TURNS:-8}
 MAX_USD=2
 MAX_PARALLEL=${MAX_PARALLEL:-5}
+# Comma-separated task IDs (e.g. "TASK-12,TASK-16") to run instead of the
+# small/full presets below -- for re-running specific items (4.4's
+# auto-mode/autonomous-with-audit re-run of 4.3's two max_turns failures).
+ONLY_IDS=${ONLY_IDS:-}
 
 mkdir -p "$OUTPUT_DIR"
 echo "Session: $SESSION_DIR (to resume: $0 $RUN_SIZE $SESSION_DIR)"
@@ -86,7 +90,19 @@ case "$RUN_SIZE" in
     ;;
 esac
 
-echo "Run size: $RUN_SIZE (${#ITEMS[@]} items, up to $MAX_PARALLEL in parallel)"
+if [ -n "$ONLY_IDS" ]; then
+  IFS=',' read -ra want_ids <<< "$ONLY_IDS"
+  FILTERED=()
+  for entry in "${ITEMS[@]}"; do
+    id="${entry%%|*}"
+    for want in "${want_ids[@]}"; do
+      [ "$id" = "$want" ] && FILTERED+=("$entry")
+    done
+  done
+  ITEMS=("${FILTERED[@]}")
+fi
+
+echo "Run size: $RUN_SIZE (${#ITEMS[@]} items, up to $MAX_PARALLEL in parallel, MAX_TURNS=$MAX_TURNS)"
 
 # run_item: one item, up to MAX_RETRIES attempts with exponential backoff.
 # Every attempt appends one NDJSON line to $AUDIT_LOG. A success is only
@@ -128,7 +144,7 @@ Read the file(s) in SCOPE. Answer the QUESTION with specific file:line reference
 [specific findings, with file:line references, citing CLAUDE.md's Security Requirements > Input Validation section where relevant]
 ## Recommendations
 [concrete, actionable -- or state explicitly that no gap was found]
-" --max-turns "$MAX_TURNS" --max-budget-usd "$MAX_USD" --permission-mode acceptEdits --output-format json \
+" --max-turns "$MAX_TURNS" --max-budget-usd "$MAX_USD" --permission-mode acceptEdits --allowedTools "Read,Write" --output-format json \
       > "$RESULT_FILE" 2>>"$OUT_FILE"
     local call_status=$?
     set -e
