@@ -74,4 +74,7 @@ class ReportArticleParam {
   // matches AC7 exactly.
   @Size(max = 1000)
   private String reason;
+
+  // Optional contact address so we can follow up with the reporter.
+  private String contactEmail;
 }
