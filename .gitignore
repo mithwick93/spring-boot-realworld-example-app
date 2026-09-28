@@ -3,6 +3,8 @@
 .claude-tool-log.txt
 !gradle/wrapper/gradle-wrapper.jar
 *.db
+.venv/
+__pycache__/
 
 ### STS ###
 .apt_generated

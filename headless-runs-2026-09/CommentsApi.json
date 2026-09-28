@@ -1,0 +1,10 @@
+{
+  "file": "src/main/java/io/spring/api/CommentsApi.java",
+  "status": "ok",
+  "subtype": "success",
+  "terminal_reason": "completed",
+  "num_turns": 1,
+  "total_cost_usd": 0.0074764,
+  "permission_denials": [],
+  "review": "COMPLIANT"
+}
