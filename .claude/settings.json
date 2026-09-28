@@ -20,6 +20,15 @@
             "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/audit-log.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/verify-java-compile.sh"
+          }
+        ]
       }
     ]
   }
