@@ -28,6 +28,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
+  public RequestIdFilter requestIdFilter() {
+    return new RequestIdFilter();
+  }
+
+  @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
@@ -62,6 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .authenticated();
 
     http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(requestIdFilter(), JwtTokenFilter.class);
   }
 
   @Bean
